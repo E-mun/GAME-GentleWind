@@ -18,7 +18,7 @@ areas = [
     'a grove of bright yellow aspen trees in every direction.',
     'a gentle creek running over thick red mud. Occasional chirping of birds can be heard overhead.',
     'a windy field with towering wheat blocking lines of sight.',
-    'a constillation of large, dark rocks breaking though the forest floor. The rocks can be climbed but offer no great visibility.',
+    'a constellation of large, dark rocks breaking though the forest floor. The rocks can be climbed but offer no great visibility.',
     
     # 6-10
     'a long-dead campfire surrounded by small rocks, sitting in a small clearing of an oak-dense portion of forest.',
