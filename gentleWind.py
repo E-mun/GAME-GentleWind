@@ -9,48 +9,18 @@ import random
 from os import system
 import time
 
-areas = [
-    # first is the exit area
-    'a grassy clearing with an old, blue mountain bike. A clear trail leads out of the forest.',
-    
-    # other blank areas
-    'a silent meadow with deep green and grey moss covering the forest floor. Pine trees block sound and sun.',
-    'a grove of bright yellow aspen trees in every direction.',
-    'a gentle creek running over thick red mud. Occasional chirping of birds can be heard overhead.',
-    'a windy field with towering wheat blocking lines of sight.',
-    'a constellation of large, dark rocks breaking though the forest floor. The rocks can be climbed but offer no great visibility.',
-    
-    # 6-10
-    'a long-dead campfire surrounded by small rocks, sitting in a small clearing of an oak-dense portion of forest.',
-    'a series of fallen pine trees creates small openings in the canopy.',
-    'a rolling section of forest hills covered in green ferns.',
-    'a random scattering of old junk made of plywood, rusted garden equipment and hardware. No other signs of activity are present in the surrounding dense forest.',
-    'a single large, rounded grey rock sitting unassumingly in the forest floor.',
 
-    # 11-15
-    'a long abandoned deer stand sitting at the base of a large poplar tree. The forest has a few longer lines of sight, but is also obscured by dense brush in most directions.',
-    'a thick, small patch of bamboo - oddly situated in the deciduous forest. You hear occassional rustling from within.',
-    'a old, crumbling pair of stone benches, facing away from each other. No other signs of human activity are anywhere nearby.',
-    'a gargantuan and ancient oak tree, with the letter "B" carved and scarred over its base.',
-    'a damp but empty creekbed. Deer tracks clutter the banks, but no sounds can be heard nearby.',
-]
 
 class AREA():
-    def __init__(self, exit = bool, desc = str):
+    def __init__(self, exit = bool, desc = str, x = int, y = int):
         self.exit = exit
         self.description = desc
         self.pathLinks = []
         self.pathDescs = []
+        self.x = x
+        self.y = y
 
-# Initialize 4x4 grid
-grid = [
-    ['','','',''],
-    ['','','',''],
-    ['','','',''],
-    ['','','',''],
-]
 
-exit_area_assigned = False
 
 
                 
@@ -96,7 +66,44 @@ GAME_RUNNING = True
 IN_GAME = False 
 while GAME_RUNNING:
 
-    # populate grid with areas
+    
+
+    areas = [
+    # first is the exit area
+    'a grassy clearing with an old, blue mountain bike. A clear trail leads out of the forest.',
+    
+    # other blank areas
+    'a silent meadow with deep green and grey moss covering the forest floor. Pine trees block sound and sun.',
+    'a grove of bright yellow aspen trees in every direction.',
+    'a gentle creek running over thick red mud. Occasional chirping of birds can be heard overhead.',
+    'a windy field with towering wheat blocking lines of sight.',
+    'a constellation of large, dark rocks breaking though the forest floor. The rocks can be climbed but offer no great visibility.',
+    
+    # 6-10
+    'a long-dead campfire surrounded by small rocks, sitting in a small clearing of an oak-dense portion of forest.',
+    'a series of fallen pine trees. They create small openings in the otherwise dense canopy.',
+    'a rolling section of forest hills covered in green ferns.',
+    'a random scattering of old junk made of plywood, rusted garden equipment and hardware. No other signs of activity are present in the surrounding dense forest.',
+    'a single large, rounded grey rock sitting unassumingly in the forest floor.',
+
+    # 11-15
+    'a long abandoned deer stand sitting at the base of a large poplar tree. The forest has a few longer lines of sight, but is also obscured by dense brush in most directions.',
+    'a thick, small patch of bamboo - oddly situated in the deciduous forest. You hear occassional rustling from within.',
+    'a old, crumbling pair of stone benches, facing away from each other. No other signs of human activity are anywhere nearby.',
+    'a gargantuan and ancient oak tree, with the letter "B" carved and scarred over its base.',
+    'a damp but empty creekbed. Deer tracks clutter the banks, but no sounds can be heard nearby.',
+    ]
+    # Initialize 4x4 grid
+    grid = [
+    ['','','',''],
+    ['','','',''],
+    ['','','',''],
+    ['','','',''],
+    ]
+
+    exit_area_assigned = False
+
+        # populate grid with areas
     for x in range(4):
         for y in range(4):
 
@@ -112,7 +119,7 @@ while GAME_RUNNING:
             else:
                 area_exit = False
 
-            grid[x][y] = AREA(area_exit, area_description)
+            grid[x][y] = AREA(area_exit, area_description, x, y)
 
     paths = [
         # 1-5
@@ -124,7 +131,7 @@ while GAME_RUNNING:
 
         # 6-10
         'A stone archway marks the entrance to an otherwise unmarked path.',
-        'A holly bush partially obscured the begeinning of a small footpath.',
+        'A holly bush partially obscures the beginning of a small footpath.',
         'A towering wall of earth yields to a narrow crevice of a path.',
         'A subtle deer trail leads back into the woods',
         'What remains of a rusted bike frame lies at the entrance of a sloped mud path.',
@@ -213,11 +220,108 @@ while GAME_RUNNING:
 
         # IN GAME LOOP
         current_area = grid[start_coords[0]][start_coords[1]]
+        DEBUG_NEXT_DESTINATION = [start_coords[0],start_coords[1]]
         IN_GAME = True
+        turn_count = 0
         while IN_GAME:
+            DEBUG_ISOLATED = []
+            DEBUG_1 = []
+            DEBUG_2 = []
+            DEBUG_3 = []
+            DEBUG_4 = []
 
+            for i in range(4):
+                for j in range(4):
+                    area = grid[i][j]
+                    if len(area.pathLinks) < 1:
+                        DEBUG_ISOLATED.append([area.x, area.y])
+                    elif len(area.pathLinks) == 1:
+                        DEBUG_1.append([area.x, area.y])
+                    elif len(area.pathLinks) == 2:
+                        DEBUG_2.append([area.x, area.y])
+                    elif len(area.pathLinks) == 3:
+                        DEBUG_3.append([area.x, area.y])
+                    else:
+                        DEBUG_4.append([area.x, area.y])
+
+            turn_count += 1
             # Gentle Wind Check / Path Shifting
-            
+            if turn_count % 4 == 0:
+                print('A gentle wind rushes through the forest along your path.')
+
+                # PATH ADD
+                lookingForLink = True
+                while lookingForLink:
+                    
+
+                    # looking to add a path between 2 areas
+
+                    for x in range(4):
+                        for y in range(4):
+                            area = grid[x][y]
+
+                            # start from an area with only 1 link
+                            if len(area.pathLinks) < 2:
+                                # pick a random area for the destination
+                                randX = random.randint(0,3)
+                                randY = random.randint(0,3)
+                                checkArea = grid[randX][randY]
+
+                                # check if that index is not already a link to this area && not self-reference
+                                if checkArea != area and [randX, randY] not in area.pathLinks:
+
+                                    # pull description of path from front of path list
+                                    new_path_description = paths.pop(0)
+
+                                    # add the link + description to starting area
+                                    area.pathDescs.append(new_path_description)
+                                    area.pathLinks.append([randX, randY])
+
+                                    # add link + description to destination area
+                                    checkArea.pathDescs.append(new_path_description)
+                                    checkArea.pathLinks.append([x,y])
+
+                                    lookingForLink = False
+                                    break
+                        if lookingForLink == False:
+                            break
+                
+                # SUBTRACT PATH
+                lookingForErase = True
+
+                # Looking to subtract a path from 2 areas that each have more than 1 path
+                while lookingForErase:
+                        x = random.randint(0,3)
+                        y = random.randint(0,3)
+                        area = grid[x][y]
+
+                        # front area has more than 1 path
+                        if len(area.pathLinks) > 1:
+
+                            # check all of area's path destinations for viable erasures
+                            for i in range(len(area.pathLinks)):
+                                if len(grid[area.pathLinks[i][0]][area.pathLinks[i][1]].pathLinks) > 1: # << The number of paths connecting to the destination of this path 'i'
+                                    
+                                    dest_area = grid[area.pathLinks[i][0]][area.pathLinks[i][1]]
+                                    
+                                    # valid erasure found
+                                    lookingForErase = False
+
+                                    # pop path description to back of paths list
+                                    path_removed = area.pathDescs.pop(i)
+                                    paths.append(path_removed)
+                                    
+
+                                    # remove destination path
+                                    path_index_to_erase = dest_area.pathDescs.index(path_removed)
+                                    dest_area.pathLinks.pop(path_index_to_erase)
+                                    dest_area.pathDescs.pop(path_index_to_erase)
+
+                                    # remove path link from initial area
+                                    area.pathLinks.pop(i)
+
+                                    break
+
             # Print the Current Area Description
             area_intro = 'You come to '+current_area.description
             print(area_intro)
@@ -283,17 +387,27 @@ while GAME_RUNNING:
             action = action[0].lower()
 
             if action == 'a':
+                DEBUG_LAST_DESTINATION = DEBUG_NEXT_DESTINATION
+                DEBUG_NEXT_DESTINATION = [current_area.pathLinks[0][0],current_area.pathLinks[0][1]]
                 current_area = grid[current_area.pathLinks[0][0]][current_area.pathLinks[0][1]]
+                
                 system('clear')
             elif action == 'b' and len(current_area.pathLinks) >= 2:
+                DEBUG_LAST_DESTINATION = DEBUG_NEXT_DESTINATION
+                DEBUG_NEXT_DESTINATION = [current_area.pathLinks[1][0],current_area.pathLinks[1][1]]
                 current_area = grid[current_area.pathLinks[1][0]][current_area.pathLinks[1][1]]
+                
                 system('clear')
             elif action == 'c' and len(current_area.pathLinks) >= 3:
+                DEBUG_LAST_DESTINATION = DEBUG_NEXT_DESTINATION
+                DEBUG_NEXT_DESTINATION = [current_area.pathLinks[2][0],current_area.pathLinks[2][1]]
                 current_area = grid[current_area.pathLinks[2][0]][current_area.pathLinks[2][1]]
+                
                 system('clear')
             else:
                 print('Input unrecognized - please enter a valid path.')
                 time.sleep(1)
+            
     
     else:
         print('Type START to begin the game.\n')
